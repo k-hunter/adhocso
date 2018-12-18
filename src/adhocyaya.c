@@ -13,10 +13,16 @@
 typedef void(*PF)();
 PF g_pf = NULL;
 
+/*
+ *
+ *typedef int (*DataRecvCallback)(char *srcAddr, unsigned char *pData);
+ *typedef int (*NetWorkStatusCallback)(int statusType, char *pParam);
+ *typedef int (*PcmVoiceCallback)(int statusType, char *pParam);
+ */
 
-typedef int (*DataRecvCallback)(char *srcAddr, unsigned char *pData);
-typedef int (*NetWorkStatusCallback)(int statusType, char *pParam);
-typedef int (*PcmVoiceCallback)(int statusType, char *pParam);
+typedef void (*DataRecvCallback)(char *srcAddr, unsigned char *pData);
+typedef void (*NetWorkStatusCallback)(int statusType, char *pParam);
+typedef void (*PcmVoiceCallback)(int statusType, char *pParam);
 
 DataRecvCallback call1 = NULL;
 NetWorkStatusCallback call2 = NULL;
@@ -66,35 +72,50 @@ void registerFun(PF pf)
 }
 
 
-/*void*/
-int 
-addrecvdatalistener(DataRecvCallback pCallBack)
+void
+/*int */
+addRecvDataListener(DataRecvCallback pCallBack)
+/*addrecvdatalistener(DataRecvCallback *pCallBack)*/
 {
-     ADHOCLOG_SO("===register successed! waitting to call by peers === ");
-     call1 = pCallBack;
+    ADHOCLOG_SO("===register successed! waitting to call by peers === ");
+    //call1 = pCallBack;
+    char aa[] = "hello-";
+    unsigned char bb[] = "world";
+    pCallBack(aa,bb);
+
+
     /*sleep(5);*/
     /*char* aaa = "hello";*/
     /*unsigned char* bbb = "world";*/
     /*pCallBack(11,22);*/
     /*pCallBack(aaa,bbb);*/
-    return 1;
+    /*return 1;*/
 }
-/*void*/
-int 
+void
+/*int */
 addNetWorkStatusListener(NetWorkStatusCallback pFunc)//添加网络状态回调监听器
+/*addNetWorkStatusListener(NetWorkStatusCallback *pFunc)//添加网络状态回调监听器*/
 {
      ADHOCLOG_SO("===register successed! waitting to call by peers === ");
-     call2 =  pFunc;
-    return 1;
+     /*call2 =  pFunc;*/
+     int aa = 110;
+     char bb[] = "world";
+     pFunc(aa,bb);
+    /*return 1;*/
 }
 
-/*void */
-int 
+void 
+/*int */
 addPcmVoiceListener(PcmVoiceCallback pFunc)//添加接收话音回调监听器
+/*addPcmVoiceListener(PcmVoiceCallback *pFunc)//添加接收话音回调监听器*/
 {
      ADHOCLOG_SO("===register successed! waitting to call by peers === ");
-     call3 =  pFunc;
-    return 1;
+     /*call3 =  pFunc;*/
+     int aa = 110;
+     char bb[] = "world";
+     pFunc(aa,bb);
+
+    /*return 1;*/
 }
 
 // B模块的某函数， 在一定条件下被触发
