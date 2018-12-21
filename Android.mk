@@ -4,9 +4,9 @@ include $(CLEAR_VARS)
 LOCAL_LDLIBS    := -lm -llog 
 LOCAL_C_INCLUDES:=$(LOCAL_PATH)/include
 LOCAL_SRC_FILES:= \
-src/adhocyaya.c
+src/adhocd.c
 
-LOCAL_MODULE:= libadhocyaya
+LOCAL_MODULE:= libadhocd
 
 #TARGET_PRELINK_MODULE := false
 LOCAL_CFLAGS += -W -Wall

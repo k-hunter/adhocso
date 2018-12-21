@@ -1,9 +1,8 @@
 #include <stdio.h>
-/*#include "adhocyaya.h"*/
+/*#include "adhocd.h"*/
 #include <unistd.h>  
 #include <stdbool.h>
 #include <android/log.h>
-/*#include "utils/Log.h"*/
 #define ADHOCLOG_SO(fmt, ...) __android_log_print(ANDROID_LOG_WARN, "Adhoc_SO", "%12s:%-5d,%s ," fmt, __FILE__, __LINE__ ,(char*)__FUNCTION__,##__VA_ARGS__)
 
 /*#define  LOG_TAG    "libplasma"*/
@@ -193,8 +192,8 @@ typedef bool (*AddPcmVoiceListener_ptr)(PcmVoiceCallback *pFunc);//添加接收�
 void init(char paras[])
 {
 
-ADHOCLOG_SO("====enter so====");
-/*return 1;*/
+	ADHOCLOG_SO("====enter so====");
+	/*return 1;*/
 
 }//初始化自组网
 
@@ -202,8 +201,8 @@ ADHOCLOG_SO("====enter so====");
 void tellLocalIpAddr(char ipAddr[])
 {
 
-ADHOCLOG_SO("====enter so====");
-/*return 1;*/
+	ADHOCLOG_SO("====enter so====");
+	/*return 1;*/
 
 }//设置本机自组网ip
 
@@ -211,8 +210,8 @@ ADHOCLOG_SO("====enter so====");
 void queryNetWorkStatus(char cmd[])
 {
 
-ADHOCLOG_SO("====enter so====");
-/*return 1;*/
+	ADHOCLOG_SO("====enter so====");
+	/*return 1;*/
 
 }//查询网络状态
 
@@ -220,8 +219,8 @@ ADHOCLOG_SO("====enter so====");
 void setParameters(char paras[])
 {
 
-ADHOCLOG_SO("====enter so====");
-/*return 1;*/
+	ADHOCLOG_SO("====enter so====");
+	/*return 1;*/
 
 }//设置自组网参数
 
@@ -229,8 +228,8 @@ ADHOCLOG_SO("====enter so====");
 void setPttState (char state[])
 {
 
-ADHOCLOG_SO("====enter so====");
-/*return 1;*/
+	ADHOCLOG_SO("====enter so====");
+	/*return 1;*/
 
 }//设置ptt状态
 
@@ -238,8 +237,8 @@ ADHOCLOG_SO("====enter so====");
 void sendBDMsg2AdHoc(char  gga[])
 {
 
-ADHOCLOG_SO("====enter so====");
-/*return 1;*/
+	ADHOCLOG_SO("====enter so====");
+	/*return 1;*/
 
 }//发送北斗消息到自组网
 
@@ -247,8 +246,8 @@ ADHOCLOG_SO("====enter so====");
 void sendExtraData (int type, char data[])
 {
 
-ADHOCLOG_SO("====enter so====");
-/*return 1;*/
+	ADHOCLOG_SO("====enter so====");
+	/*return 1;*/
 
 }//执行shell命令
 
@@ -256,8 +255,8 @@ ADHOCLOG_SO("====enter so====");
 void setIsNeedHeadForUserData(bool isNeedHead)
 {
 
-ADHOCLOG_SO("====enter so====");
-/*return 1;*/
+	ADHOCLOG_SO("====enter so====");
+	/*return 1;*/
 
 }//设置用户数据是否需要头部
 
@@ -268,8 +267,8 @@ ADHOCLOG_SO("====enter so====");
 int openAdHocDevice()
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//打开自组网设备 0:打开成功, 非0:打开失败
 
@@ -277,8 +276,8 @@ return 1;
 int closeAdHocDevice()
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//关闭自组网设备
 
@@ -286,8 +285,8 @@ return 1;
 int reOpenAdHocDevice()
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//重打开自组网设备
 
@@ -295,8 +294,8 @@ return 1;
 int setEnabled (bool enabled)
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//设置数据传输模式，ip或非ip true :非ip模式，false :ip模式
 
@@ -304,8 +303,8 @@ return 1;
 int sendData( char data[])
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//发送数据
 
@@ -313,8 +312,8 @@ return 1;
 int sendData3(char srcAddr[], char desAddr[], char data[])
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//发送数据
 
@@ -322,8 +321,8 @@ return 1;
 int sendDataPri(char srcAddr[],  char desAddr[],  char data[], int pri)
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//发送数据
 
@@ -331,8 +330,8 @@ return 1;
 int sendPcmVoice(char voiceData[])
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//发送话音数据
 
@@ -340,8 +339,8 @@ return 1;
 int setEthernetIP(char ipAddr[])
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//设置以太网ip
 
@@ -349,8 +348,8 @@ return 1;
 int updateModem(char fileName[], char data[])
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//升级modem
 
@@ -359,9 +358,9 @@ return 1;
 ConfigParams getConfigParams()
 {
 
-ADHOCLOG_SO("====enter so====");
-ConfigParams test;
-return test;
+	ADHOCLOG_SO("====enter so====");
+	ConfigParams test;
+	return test;
 
 }//获取平台信息
 
@@ -369,9 +368,9 @@ return test;
 char* getEthernetIP()
 {
 
-ADHOCLOG_SO("====enter so====");
-char* test = "hello im so,ip 192.168.110.110";
-return test;
+	ADHOCLOG_SO("====enter so====");
+	char* test = "hello im so,ip 192.168.110.110";
+	return test;
 
 }//查询以太网ip
 
@@ -382,8 +381,8 @@ return test;
 bool isEnabled()
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//查询数据传输模式 
 
@@ -391,8 +390,8 @@ return 1;
 bool isNetWorkAvailable()
 {
 
-ADHOCLOG_SO("====enter so====");
-return 1;
+	ADHOCLOG_SO("====enter so====");
+	return 1;
 
 }//网络是否可用
 
@@ -400,14 +399,14 @@ return 1;
 bool addDataRecvListener(DataRecvCallback pFunc)
 {
 
-ADHOCLOG_SO("====enter so====");
-ADHOCLOG_SO("===register successed! waitting to call by peers === ");
+	ADHOCLOG_SO("====enter so====");
+	ADHOCLOG_SO("===register successed! waitting to call by peers === ");
 	//call1 = pCallBack;
 	char aa[] = "hello-";
 	unsigned char bb[] = "world";
 	pFunc(aa,bb);
 
-return 1;
+	return 1;
 
 }//添加接收数据回调监听器    
 
@@ -415,14 +414,14 @@ return 1;
 bool addNetWorkStatusListener(NetWorkStatusCallback pFunc)
 {
 
-ADHOCLOG_SO("====enter so====");
-ADHOCLOG_SO("===register successed! waitting to call by peers === ");
+	ADHOCLOG_SO("====enter so====");
+	ADHOCLOG_SO("===register successed! waitting to call by peers === ");
 	/*call2 =  pFunc;*/
 	int aa = 110;
 	char bb[] = "world";
 	pFunc(aa,bb);
 
-return 1;
+	return 1;
 
 }//添加网络状态回调监听器
 
@@ -430,70 +429,15 @@ return 1;
 bool addPcmVoiceListener(PcmVoiceCallback pFunc)
 {
 
-ADHOCLOG_SO("====enter so====");
-ADHOCLOG_SO("===register successed! waitting to call by peers === ");
+	ADHOCLOG_SO("====enter so====");
+	ADHOCLOG_SO("===register successed! waitting to call by peers === ");
 	/*call3 =  pFunc;*/
 	int aa = 110;
 	char bb[] = "world";
 	pFunc(aa,bb);
 
-return 1;
+	return 1;
 
 }//添加接收话音回调监听器
 
-
-
-///////////////////////////////////////////////////////////////////////// 
-/**
-  @param srcAddr 源ip
-  @param desAddr 目的ip
-  @param data 数据内容
- **/
-/*
- *typedef int (*DataRecvCallback)(char *srcAddr, unsigned char *pData);
- *typedef int (*NetWorkStatusCallback)(int statusType, char *pParam);
- *typedef int (*PcmVoiceCallback)(int statusType, char *pParam);
- *
- *struct{
- *    char mPlatform[32];
- *    char mUEKind[32];
- *    char mHW[32];
- *    char mOS[32];
- *    int mType;
- *}ConfigParams;
- *
- *
- *void init(char paras[]);//初始化自组网
- *void tellLocalIpAddr(char ipAddr[]);//设置本机自组网ip
- *void queryNetWorkStatus(char cmd[]);//查询网络状态
- *void setParameters(char paras[]);//设置自组网参数
- *void setPttState (char state[]);//设置ptt状态
- *void sendBDMsg2AdHoc(char  gga[]);//发送北斗消息到自组网
- *void sendExtraData (int type, char data[]);//执行shell命令
- *void setIsNeedHeadForUserData(bool isNeedHead);//设置用户数据是否需要头部
- *
- *
- *int openAdHocDevice();//打开自组网设备 0:打开成功, 非0:打开失败
- *int closeAdHocDevice();//关闭自组网设备
- *int reOpenAdHocDevice();//重打开自组网设备
- *int setEnabled (bool enabled);//设置数据传输模式，ip或非ip true :非ip模式，false :ip模式
- *int sendData( char data[]);//发送数据
- *int sendData3(char srcAddr[], char desAddr[], char data[]);//发送数据
- *int sendDataPri(char srcAddr[],  char desAddr[],  char data[], int pri);//发送数据
- *int sendPcmVoice(char voiceData[]);//发送话音数据
- *int setEthernetIP(char ipAddr[]);//设置以太网ip
- *int updateModem(char fileName[], char data[]);//升级modem
- *
- *
- *ConfigParams getConfigParams();//获取平台信息
- *char* getEthernetIP();//查询以太网ip
- *bool isEnabled();//查询数据传输模式 
- *bool isNetWorkAvailable();//网络是否可用
- *bool addDataRecvListener(DataRecvCallback *pFunc);//添加接收数据回调监听器    
- *bool addNetWorkStatusListener(NetWorkStatusCallback *pFunc);//添加网络状态回调监听器
- *bool addPcmVoiceListener(PcmVoiceCallback *pFunc);//添加接收话音回调监听器
- *
- */
-
-///////////////////////////////////////////////////////////////////////// 
 
