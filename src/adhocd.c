@@ -10,6 +10,12 @@
 #include <unistd.h>
 #include <pthread.h>
 
+#include<stdio.h>
+#include<unistd.h>
+#include<string.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
+#include<sys/socket.h>
 
 #define MAX_SIZE_STR 65530
 #define ADHOCLOG_SO(fmt, ...) __android_log_print(ANDROID_LOG_WARN, "Adhoc_SO", "%12s:%-5d,%s ," fmt, __FILE__, __LINE__ ,(char*)__FUNCTION__,##__VA_ARGS__)
@@ -137,7 +143,7 @@ typedef char* (*GetEthernetIP_ptr)();//查询以太网ip
 // 5 bool TODO
 typedef bool (*IsEnabled_ptr)();//查询数据传输模式 
 typedef bool (*IsNetWorkAvailable_ptr)();//网络是否可用
-typedef bool (*AddDataRecvListener_ptr)(DataRecvCallback *pFunc);//添加接收数据回调监听器    
+typedef bool (*AddDataRecvListener_ptr)(DataRecvCallback pFunc);//添加接收数据回调监听器    
 typedef bool (*AddNetWorkStatusListener_ptr)(NetWorkStatusCallback *pFunc);//添加网络状态回调监听器
 typedef bool (*AddPcmVoiceListener_ptr)(PcmVoiceCallback *pFunc);//添加接收话音回调监听器
 
@@ -149,12 +155,55 @@ typedef bool (*AddPcmVoiceListener_ptr)(PcmVoiceCallback *pFunc);//添加接收�
 
 char* pcmvoicedata_sent_from_peer;//global variable of addXXXlistener(), change it where you want
 
+DataRecvCallback callback_global_list_data;//用于存注册函数的地址	
+NetWorkStatusCallback callback_global_list_net;//用于存注册函数的地址	
+PcmVoiceCallback callback_global_list_voice;//用于存注册函数的地址	
+
+
 ///////////////////////////////////void////////////////////////////////////// 
 
 
 void init(char paras[])
 {
+	//test of crashed of socket create
+	//status: FIXED
+
 	ADHOCLOG_SO("====enter so==== %s",paras);
+	//创建一个套接字，并检测是否创建成功
+
+	struct sockaddr_in addrSer;  //创建一个记录地址信息的结构体 
+	struct sockaddr_in addrCli;//创建一个记录地址信息的结构体
+	int SockCli,Port_num;//client socket ,socket port  SOCK_STREAM
+
+	/*SockCli = socket(AF_INET, SOCK_DGRAM, 0);*/
+	SockCli = socket(AF_INET, SOCK_STREAM, 0);
+	if(SockCli == -1){
+		ADHOCLOG_SO("adhoc socket create failed!");
+	}
+
+	// server addr
+	//struct sockaddr_in addrSer;  //创建一个记录地址信息的结构体 
+	addrSer.sin_family = AF_INET;    //使用AF_INET协议族 
+	addrSer.sin_port = htons(63450);     //设置地址结构体中的端口号
+	addrSer.sin_addr.s_addr = inet_addr("127.0.0.1");  //设置通信ip
+	/*addrSer.sin_addr.s_addr = inet_addr("192.168.70.1");  //设置通信ip*/
+
+	//client addr  
+	//struct sockaddr_in addrCli;//创建一个记录地址信息的结构体
+	addrCli.sin_family = AF_INET;    //使用AF_INET协议族 
+	/*addrCli.sin_port = htons(sock_cli_port_num);     //设置地址结构体中的端口号*/
+	addrCli.sin_port = htons(63451);     //设置地址结构体中的端口号
+	addrCli.sin_addr.s_addr = inet_addr("127.0.0.1");  //设置通信ip
+
+	//clent port bind
+	//将套接字地址与所创建的套接字号联系起来，并检测是否绑定成功
+	socklen_t addrlen = sizeof(struct sockaddr);
+	int res = bind(SockCli,(struct sockaddr*)&addrCli, addrlen);
+	if(res == -1){
+		perror("bind failed!");
+	}
+	ADHOCLOG_SO("adhoc socket bind done!");
+
 }//初始化自组网
 
 
@@ -245,6 +294,31 @@ int setEnabled (bool enabled)
 int sendData( char data[])
 {
 	ADHOCLOG_SO("====enter so==== %s",data);
+	char aa[] = "i'll-call-callback-now";
+	unsigned char bb[] = "yahoooooooooooooooooooo";
+	int cc=666;
+	
+	if(NULL != callback_global_list_data)
+	{
+	ADHOCLOG_SO("let's callback now , &callback_global_list_data:%p",&callback_global_list_data);
+	(*callback_global_list_data)(aa,bb);
+	}
+	
+	if(NULL != callback_global_list_net)
+	{
+	ADHOCLOG_SO("let's callback now , callback_global_list_net:%p",callback_global_list_net);
+	(*callback_global_list_net)(cc,bb);
+	}
+
+	if(NULL != callback_global_list_voice)
+	{
+	ADHOCLOG_SO("let's callback now , callback_global_list_voice:%p",callback_global_list_voice);
+	(*callback_global_list_voice)(cc,bb);
+	}
+	else{
+	/*ADHOCLOG_SO("UNEXPECT RESULT: ##############you need to addXXXlistener first before call this callback!!!###############%p",callback_global_list_voice);*/
+	ADHOCLOG_SO("UNEXPECT RESULT: ##############you need to addXXXlistener first before call this callback!!!###############");
+	}
 
 	return 1;
 }//发送数据
@@ -266,9 +340,10 @@ int sendDataPri(char srcAddr[],  char desAddr[],  char data[], int pri)
 }//发送数据
 
 
-int sendPcmVoice(char voiceData[])
+/*int sendPcmVoice(char voiceData[])*/
+int sendPcmVoice(char* voiceData)
 {
-	ADHOCLOG_SO("====enter so====%s",voiceData);
+	ADHOCLOG_SO("====enter so change test====%s",voiceData);
 	return 1;
 }//发送话音数据
 
@@ -342,14 +417,16 @@ bool isNetWorkAvailable()
 }//网络是否可用
 
 
+
 bool addDataRecvListener(DataRecvCallback pFunc)
 {
 
-	ADHOCLOG_SO("====enter so====");
-	ADHOCLOG_SO("===register successed! waitting to call by peers === ");
-	char aa[] = "hello-";
-	unsigned char bb[] = "world";
-	pFunc(aa,bb);
+	ADHOCLOG_SO("====enter so====,we'll save in callback_global_list: &pFunc=%p",&pFunc);//addr of pFunc 
+	ADHOCLOG_SO("====enter so====,we'll save in callback_global_list, pFunc=%p",pFunc);
+
+	callback_global_list_data = pFunc;
+	ADHOCLOG_SO("=======,geek,&callback_global_list_data=%p",&callback_global_list_data);
+	ADHOCLOG_SO("=======,geek,callback_global_list_datat=%p",callback_global_list_data);
 	return 1;
 
 }//添加接收数据回调监听器    
@@ -357,25 +434,18 @@ bool addDataRecvListener(DataRecvCallback pFunc)
 
 bool addNetWorkStatusListener(NetWorkStatusCallback pFunc)
 {
-
-	ADHOCLOG_SO("====enter so====");
 	ADHOCLOG_SO("===register successed! waitting to call by peers === ");
-	int aa = 110;
-	char bb[] = "world";
-	pFunc(aa,bb);
-
+	callback_global_list_net = pFunc;
+	ADHOCLOG_SO("=======,geek,&callback_global_list_net=%p",&callback_global_list_net);
 	return 1;
 
 }//添加网络状态回调监听器
 
 bool addPcmVoiceListener(PcmVoiceCallback pFunc)
 {
-	ADHOCLOG_SO("====enter so====");
 	ADHOCLOG_SO("===register successed! waitting to call by peers === ");
-
-	int aa = 110;
-	ADHOCLOG_SO(" %s",pcmvoicedata_sent_from_peer);
-	pFunc(aa,pcmvoicedata_sent_from_peer);
+	callback_global_list_voice = pFunc;
+	ADHOCLOG_SO("=======,geek,&callback_global_list_voice=%p",&callback_global_list_voice);
 	return 1;
 
 }//添加接收话音回调监听器
@@ -387,6 +457,37 @@ int addPcmVoiceListener_spe_api(PcmVoiceCallback pFunc,char voiceData1[MAX_SIZE_
 	int aa = 110;
 	pFunc(aa,voiceData1);
 	ADHOCLOG_SO("====leave so====");
+	return 1;
+
+}//添加接收话音回调监听器
+
+
+
+bool removeDataRecvListener()
+{
+	ADHOCLOG_SO("===remove listener from so successed!  === ");
+	callback_global_list_data = NULL;
+	ADHOCLOG_SO("=======,geek,callback_global_list_data=%p",callback_global_list_data);
+	return 1;
+
+}//添加接收数据回调监听器    
+
+
+bool removeNetWorkStatusListener()
+{
+
+	ADHOCLOG_SO("===remove listener from so successed! === ");
+	callback_global_list_net = NULL;
+	ADHOCLOG_SO("=======,geek,&callback_global_list_net=%p",&callback_global_list_net);
+	return 1;
+
+}//添加网络状态回调监听器
+
+bool removePcmVoiceListener()
+{
+	ADHOCLOG_SO("===remove listener from so successed! === ");
+	callback_global_list_voice = NULL;
+	ADHOCLOG_SO("=======,geek,&callback_global_list_voice=%p",&callback_global_list_voice);
 	return 1;
 
 }//添加接收话音回调监听器
