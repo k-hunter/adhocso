@@ -1,5 +1,4 @@
 #include <stdio.h>
-/*#include "adhocd.h"*/
 #include <unistd.h>  
 #include <stdbool.h>
 #include <android/log.h>
@@ -17,7 +16,10 @@
 #include<arpa/inet.h>
 #include<sys/socket.h>
 
-#define MAX_SIZE_STR 65530
+
+#include   <net/if.h>//for ip reference
+
+#define MAX_SIZE_STR 1024
 #define ADHOCLOG_SO(fmt, ...) __android_log_print(ANDROID_LOG_WARN, "Adhoc_SO", "%12s:%-5d,%s ," fmt, __FILE__, __LINE__ ,(char*)__FUNCTION__,##__VA_ARGS__)
 
 /*#define  LOG_TAG    "libplasma"*/
@@ -225,6 +227,8 @@ void setParameters(char paras[])
 {
 	ADHOCLOG_SO("====enter so==== %s",paras);
 
+
+
 }//设置自组网参数
 
 
@@ -348,12 +352,236 @@ int sendPcmVoice(char* voiceData)
 }//发送话音数据
 
 
-int setEthernetIP(char ipAddr[])
-{
-	ADHOCLOG_SO("====enter so==== %s",ipAddr);
 
-	return 1;
+
+
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////Ip
+
+int setip(char *ip);
+char* getip(char *ip_buf);
+int ip_test(char *ip);
+
+///////////////////////////////////////////////////////////////////////// 
+/*the test of set ip*/
+/*测试了3种方法，均失败 */
+//测试结果：无法设置，返回值-1
+///////////////////////////////////////////////////////////////////////// 
+//设置IP地址
+/*
+ * 函数名称 ： int setip(char *ip)
+ * 函数功能 ： 设置系统IP地址
+ * 参    数 ： 
+ *char *ip ：设置的IP地址，以点分十进制的字符串方式表示，如“192.168.0.5” 
+ * 返 回 值 ： 0 : 成功 ；  -1 :  失败 
+ */
+int setip(char *ip)
+{
+	ADHOCLOG_SO("=========enter ======= ip from js=%s ",ip);
+	struct ifreq temp;
+	struct sockaddr_in *addr;
+	int fd = 0;
+	int ret = -1;
+	/*strcpy(temp.ifr_name, "eth0");*/
+	strcpy(temp.ifr_name, "wlan0");
+	if((fd=socket(AF_INET, SOCK_STREAM, 0))<0)
+	{
+		return -1;
+	}
+	addr = (struct sockaddr_in *)&(temp.ifr_addr);
+	addr->sin_family = AF_INET;
+	addr->sin_addr.s_addr = inet_addr(ip);
+	ret = ioctl(fd, SIOCSIFADDR, &temp);
+	ADHOCLOG_SO("ret=%d,fd=%d\n",ret,fd);
+	close(fd);
+	if(ret < 0)
+		return -1;
+	return 0;
+}
+
+//获取IP地址
+/*
+ * 函数名称 ： char * getip(char *ip_buf)
+ * 函数功能 ： 获取系統IP地址
+ * 参    数 ： 
+ *char *ip_buf ：用来存放IP地址的内存空间
+ * 返 回 值 ： ip_buf ： 存放IP地址的内存地址
+ */
+char* getip(char *ip_buf)
+{
+	struct ifreq temp;
+	struct sockaddr_in *myaddr;
+	int fd = 0;
+	int ret = -1;
+	/*strcpy(temp.ifr_name, "eth0");*/
+	strcpy(temp.ifr_name, "wlan0");
+	if((fd=socket(AF_INET, SOCK_STREAM, 0))<0)
+	{
+		return -1;
+	}
+	ret = ioctl(fd, SIOCGIFADDR, &temp);
+	close(fd);
+	if(ret < 0)
+		return NULL;
+	myaddr = (struct sockaddr_in *)&(temp.ifr_addr);
+	strcpy(ip_buf, inet_ntoa(myaddr->sin_addr));
+	ADHOCLOG_SO("ipaddr=%s\n",ip_buf);
+	return ip_buf;
+}
+
+
+int ip_test(char *ip)
+{
+	ADHOCLOG_SO("=========enter ====== ip from js=%s ",ip);
+	/*char * ip = "172.20.223.117";*/
+	char buf[16]="";
+	int ret_set=setip(ip);//TODO ,got some unexpected result,why return -1
+	ADHOCLOG_SO("ret_set=%d\n",ret_set);
+	ADHOCLOG_SO("get ipaddr=%s\n",getip(buf));
+	return 0;
+}
+
+///////////////////////////////////////////////////////////////////////// 
+void sys_call(char* ip)
+{//use system call set ip ,failed!
+	ADHOCLOG_SO("=========enter ====== ip from js=%s ",ip);
+	/*system("ifconfig wlan0 192.168.0.88");*/
+	int ret_sys_call=system("ifconfig wlan0 192.168.0.88");
+	ADHOCLOG_SO("ret_sys_call=%d",ret_sys_call);//get a -1 here 
+}
+
+
+///////////////////////////////////////////////////////////////////////// 
+// 执行系统命令，返回命令执行结果字符串
+char* get_output_of_cmd(const char* cmd) 
+{
+	ADHOCLOG_SO("========= ======= ");
+	int32_t count=2048;
+	char s[2048];
+	char* ret;
+	FILE* stream = popen(cmd, "r");
+	if (stream != NULL) {
+		// 每次从stream中读取指定大小的内容
+		while (fgets(s, count, stream))
+			ret = s;
+		pclose(stream);
+		ADHOCLOG_SO("ret:\n %s",ret);
+	}
+	return ret;
+}
+
+
+// 执行系统命令，根据命令退出代码返回布尔值
+bool get_exit_status_of_cmd(const char* cmd) {
+	return (system(cmd) == 0);
+}
+
+void exccmd()
+{
+	ADHOCLOG_SO("========= ======= ");
+		/*get_exit_status_of_cmd("ls /root");*/
+	char* re;
+	re=get_output_of_cmd("/data/test.sh");
+	ADHOCLOG_SO("========= =======%s ",re);
+	int ret_cmd=	get_exit_status_of_cmd("/data/test.sh");
+	ADHOCLOG_SO("========= ======= %d ",ret_cmd);
+
+}
+///////////////////////////////////////////////////////////////////////// 
+
+
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////// 
+
+/*剥离高权限操作到socket的另一端，daemon，成功。*/
+///////////////////////////////////////////////////////////////////////// 
+#define MAX_MSG_SIZE 1024
+int socket_cli2serv(char* para)
+{
+	char* Ip;
+	struct sockaddr_in addrSer;  //创建一个记录地址信息的结构体 
+	struct sockaddr_in addrCli;//创建一个记录地址信息的结构体
+	int Sockfd,n;//client socket ,socket port  SOCK_STREAM
+
+	//创建一个套接字，并检测是否创建成功
+
+	/*SockCli = socket(AF_INET, SOCK_DGRAM, 0);*/
+	Sockfd = socket(AF_INET,SOCK_DGRAM , 0);
+
+	if(Sockfd == -1){
+		ADHOCLOG_SO("adhoc socket create failed!\n");
+	}
+
+	// server addr
+	//struct sockaddr_in addrSer;  //创建一个记录地址信息的结构体 
+	addrSer.sin_family = AF_INET;    //使用AF_INET协议族 
+	addrSer.sin_port = htons(63450);     //设置地址结构体中的端口号
+	addrSer.sin_addr.s_addr = inet_addr("127.0.0.1");  //设置通信ip
+	/*addrSer.sin_addr.s_addr = inet_addr("192.168.70.1");  //设置通信ip*/
+
+	//client addr  
+	//struct sockaddr_in addrCli;//创建一个记录地址信息的结构体
+	addrCli.sin_family = AF_INET;    //使用AF_INET协议族 
+	addrCli.sin_port = htons(63451);     //设置地址结构体中的端口号
+	addrCli.sin_addr.s_addr = inet_addr("127.0.0.1");  //设置通信ip
+
+	//client port bind
+	//将套接字地址与所创建的套接字号联系起来，并检测是否绑定成功
+	socklen_t addrlen = sizeof(struct sockaddr);
+	int res = bind(Sockfd,(struct sockaddr*)&addrCli, addrlen);
+	if(res == -1){
+		perror("bind failed!\n");
+	}else{
+
+		ADHOCLOG_SO("adhoc socket bind done!\n");
+	}
+
+  Ip=para;
+
+  /*向serv端发送数据报*/
+  n=sendto(Sockfd,Ip,strlen(Ip),0,(struct sockaddr *)&addrSer,sizeof(struct sockaddr));
+  ADHOCLOG_SO("Ip:%s, sent %d bytes to %s\n",Ip,n,inet_ntoa(addrSer.sin_addr));
+
+  close(Sockfd);
+  return 0;
+}
+
+
+///////////////////////////////////////////////////////////////////////// 
+int setEthernetIP(char ipAddr[])
+{//测试通过socket后设置ip
+	ADHOCLOG_SO("====enter so==== %s",ipAddr);
+	//send to socket to adhocpmt
+	//ip_test(ipAddr);//failed
+	//sys_call(ipAddr);//failed
+	/*ADHOCLOG_SO("========= ======= ");*/
+	//exccmd();//failed
+	socket_cli2serv(ipAddr);//succed!
+	return 0;
 }//设置以太网ip
+
+///////////////////////////////////////////////////////////////////////// 
+
+
+
+
+
+
+
+
 
 
 int updateModem(char fileName[], char data[])
@@ -491,6 +719,14 @@ bool removePcmVoiceListener()
 	return 1;
 
 }//添加接收话音回调监听器
+
+
+
+
+
+
+
+
 
 
 
